@@ -16,7 +16,6 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const uid = useSelector(getUserSignedInId);
   const isSignedIn = useSelector(getUserSignedIn);
-  const policyInformation = useSelector(get_policy_information);
   setAuthStateChangedHandler((data: any) => {
     dispatch(setCheckedSignedIn(true))
     dispatch(setAuthenticationInfo(data))

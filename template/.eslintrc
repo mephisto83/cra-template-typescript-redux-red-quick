@@ -3,6 +3,9 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "extends": ["airbnb-typescript", "plugin:prettier/recommended"],
+  "env": {
+    "jest": true
+  },
   "rules": {
     // Make prettier code formatting suggestions more verbose.
     "prettier/prettier": ["warn"],
@@ -10,7 +13,6 @@
     "react/jsx-fragments": "off",
     // Disable prefer default export
     "import/prefer-default-export": "off",
-    "comma-dangle": "off",
     "@typescript-eslint/object-curly-spacing": "off",
     "react/jsx-filename-extension": [0],
     "import/extensions": "off",
