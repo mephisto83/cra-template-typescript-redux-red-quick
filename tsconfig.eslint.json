@@ -2,7 +2,17 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "types": ["jest"]
+    "types": [
+      "jest"
+    ]
   },
-  "include": ["src", "tests"]
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json"
+    ]
+  },
+  "include": [
+    "src",
+    "tests"
+  ]
 }

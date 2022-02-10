@@ -3,10 +3,12 @@ import thunkMiddleware from 'redux-thunk';
 import { applyMiddleware, compose } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension'
 import { CounterReducer } from './features/counter'
+import customizationReducer from './example/customizer';
 
 /* Create root reducer, containing all features of the application */
 const rootReducer = combineReducers({
   count: CounterReducer,
+  customization: customizationReducer
   /*SWAP-SLICES*/
 })
 
