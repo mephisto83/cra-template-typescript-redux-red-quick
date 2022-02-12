@@ -110,6 +110,7 @@
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "fix": "eslint src --ext .js,.jsx,.ts,.tsx  --fix",
     "format": "prettier --write src/**/*.{ts,tsx}",
+    "pub": "npm version patch && npm publish",
     "e2e": "cypress run --spec 'cypress/integration/*'"
   },
   "eslintConfig": {
