@@ -37,7 +37,6 @@ const App: React.FC = () => {
           <CssBaseline />
           <NavigationScroll>
             <Routes />
-            <Navbar />
           </NavigationScroll>
         </ThemeProvider>
       </StyledEngineProvider>
