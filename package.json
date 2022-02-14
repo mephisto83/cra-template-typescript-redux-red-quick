@@ -1,5 +1,5 @@
 {
-  "name": "cra-template-typescript-redux-red-quick",
+  "name": "red-quick-template",
   "version": "1.2.2",
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.14.0",
