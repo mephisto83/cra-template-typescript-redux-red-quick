@@ -1,6 +1,6 @@
 {
   "name": "cra-template-typescript-redux-redquick",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "license": "MIT",
   "author": "Andrew Porter -> Alexander Grischuk <alexgrischuk@gmail.com",
   "engines": {
