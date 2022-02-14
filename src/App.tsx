@@ -1,47 +1,58 @@
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
-import {
-  getUserSignedIn,
-  getUserSignedInId,
-  setAuthenticationInfo,
-  setCheckedSignedIn
-} from './features/application/application-slice'
-import { Navbar } from './components/Navbar'
-import { setAuthStateChangedHandler } from './features/firebase-app'
-import { About } from './pages/About'
-import { Home } from './pages/Home'
+import { useSelector } from 'react-redux';
+
+import { ThemeProvider, Theme } from '@mui/material/styles';
+import { CssBaseline, StyledEngineProvider } from '@mui/material';
+
+// routing
+import Routes from 'routes';
+
+// store
+import { DefaultRootStateProps } from 'types';
 
 // defaultTheme
-import themes from './themes';
+import themes from 'themes';
 
 // project imports
-import NavigationScroll from './layout/NavigationScroll';
-import { CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material'
-import Routes from './routes';
-const App: React.FC = () => {
-  const dispatch = useDispatch();
-  const customization = useSelector((state: { customization: any }) => state.customization);
-  const uid = useSelector(getUserSignedInId);
-  const isSignedIn = useSelector(getUserSignedIn);
-  setAuthStateChangedHandler((data: any) => {
-    dispatch(setCheckedSignedIn(true))
-    dispatch(setAuthenticationInfo(data))
-  })
+import Locales from 'ui-component/Locales';
+import NavigationScroll from 'layout/NavigationScroll';
+// import RTLLayout from 'ui-component/RTLLayout';
+import Snackbar from 'ui-component/extended/Snackbar';
 
+// auth provider
+import { FirebaseProvider } from 'contexts/FirebaseContext';
+// import { JWTProvider } from 'contexts/JWTContext';
+// import { Auth0Provider } from 'contexts/Auth0Context';
 
-  return (
-    <BrowserRouter>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={themes(customization)}>
-          <CssBaseline />
-          <NavigationScroll>
-            <Routes />
-          </NavigationScroll>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </BrowserRouter>
-  )
+declare module '@mui/styles/defaultTheme' {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface DefaultTheme extends Theme {}
 }
 
-export default App
+// ==============================|| APP ||============================== //
+
+const App = () => {
+    const customization = useSelector((state: DefaultRootStateProps) => state.customization);
+
+    return (
+        <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={themes(customization)}>
+                <CssBaseline />
+                {/* RTL layout */}
+                {/* <RTLLayout> */}
+                <Locales>
+                    <NavigationScroll>
+                        <FirebaseProvider>
+                            <>
+                                <Routes />
+                                <Snackbar />
+                            </>
+                        </FirebaseProvider>
+                    </NavigationScroll>
+                </Locales>
+                {/* </RTLLayout> */}
+            </ThemeProvider>
+        </StyledEngineProvider>
+    );
+};
+
+export default App;
