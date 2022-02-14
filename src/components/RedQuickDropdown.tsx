@@ -2,13 +2,16 @@ import * as React from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select'; 
+import {
+    Grid,
+} from '@mui/material';
+import Select from '@mui/material/Select';
 import { uuid } from './util';
 
 export default function RedQuickDropdown(props: any) {
     const [id, setId] = React.useState(uuid());
     return (
-        <React.Fragment>
+        <Grid item xs={12} sm={3} lg={4} sx={{ pt: { xs: 2, sm: '0 !important' } }}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id={`label-${id}`}>{props.title}</InputLabel>
                 <Select
@@ -23,6 +26,6 @@ export default function RedQuickDropdown(props: any) {
                     })}
                 </Select>
             </FormControl>
-        </React.Fragment>
+        </Grid>
     );
 }
