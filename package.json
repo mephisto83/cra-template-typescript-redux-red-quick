@@ -1,6 +1,6 @@
 {
   "name": "cra-template-typescript-redux-red-quick",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.14.0",
     "@emotion/cache": "^11.4.0",
