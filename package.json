@@ -1,7 +1,6 @@
 {
   "name": "cra-template-typescript-redux-red-quick",
   "version": "1.2.1",
-  "private": true,
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.14.0",
     "@emotion/cache": "^11.4.0",
@@ -31,7 +30,7 @@
     "date-fns": "^2.21.1",
     "draft-js": "^0.11.7",
     "emoji-picker-react": "^3.4.4",
-    "firebase": "^8.3.1",
+    "firebase": "^9.6.6",
     "formik": "^2.2.6",
     "framer-motion": "^4.1.13",
     "history": "^5.0.0",
