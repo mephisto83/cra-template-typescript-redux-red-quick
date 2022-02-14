@@ -99,6 +99,11 @@ export function setAuthStateChangedHandler(func: any) {
   return temp;
 }
 
+let _authContextHandler: any =null;
+export function setAuthStateContexHandler(func:any){
+  _authContextHandler = func;
+}
+
 export function setupCreateUpdateClocks(temp: any) {
   temp.created = convertServerTime(temp.created);
   if (temp.updated) temp.updated = convertServerTime(temp.updated);
@@ -111,7 +116,7 @@ function convertServerTime(obj: any) {
 }
 function authStateListener() {
   // [START auth_state_listener]
-  auth.onAuthStateChanged(async (user) => {
+  auth.onAuthStateChanged(async (user: any) => {
     console.log(user);
     _lastState = user;
     if (user) {
@@ -146,6 +151,9 @@ function authStateListener() {
           user
         });
       }
+    }
+    if(_authContextHandler) {
+      _authContextHandler(user)
     }
   });
   // [END auth_state_listener]
