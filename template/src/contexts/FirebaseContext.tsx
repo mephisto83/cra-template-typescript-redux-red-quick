@@ -1,23 +1,21 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
 // third-party
-import firebase from 'firebase/app';
 import 'firebase/auth';
-
 // action - state management
 import { LOGIN, LOGOUT } from 'store/actions';
 import accountReducer from 'store/accountReducer';
 
 // project imports
 import Loader from 'ui-component/Loader';
-import config from 'config';
 import { initialLoginContextProps } from 'types';
 import { FirebaseContextType } from 'types/auth';
+import { getReqs, PROVIDERS, signinWith, signOut } from 'features/firebase-app';
 
 // firebase initialize
-if (!firebase.apps.length) {
-    firebase.initializeApp(config.firebase);
-}
+// if (!firebase.apps.length) {
+//     firebase.initializeApp(config.firebase);
+// }
 
 // const
 const initialState: initialLoginContextProps = {
@@ -34,47 +32,43 @@ export const FirebaseProvider = ({ children }: { children: React.ReactElement })
     const [state, dispatch] = useReducer(accountReducer, initialState);
 
     useEffect(
-        () =>
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    dispatch({
-                        type: LOGIN,
-                        payload: {
-                            isLoggedIn: true,
-                            user: {
-                                id: user.uid,
-                                email: user.email!,
-                                name: user.displayName || 'Betty'
+        () => {
+            let { auth } = getReqs();
+            if (auth) {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        dispatch({
+                            type: LOGIN,
+                            payload: {
+                                isLoggedIn: true,
+                                user: {
+                                    id: user.uid,
+                                    email: user.email!,
+                                    name: user.displayName || 'Betty'
+                                }
                             }
-                        }
-                    });
-                } else {
-                    dispatch({
-                        type: LOGOUT
-                    });
-                }
-            }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+                        });
+                    } else {
+                        dispatch({
+                            type: LOGOUT
+                        });
+                    }
+                })
+            }
+        },
         [dispatch]
     );
 
-    const firebaseEmailPasswordSignIn = (email: string, password: string) => firebase.auth().signInWithEmailAndPassword(email, password);
-
     const firebaseGoogleSignIn = () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-
-        return firebase.auth().signInWithPopup(provider);
+        return signinWith(PROVIDERS.GOOGLE);
     };
 
-    const firebaseRegister = async (email: string, password: string) => firebase.auth().createUserWithEmailAndPassword(email, password);
+    const logout = () => {
+        return signOut();
+    }
 
-    const logout = () => firebase.auth().signOut();
 
-    const resetPassword = async (email: string) => {
-        await firebase.auth().sendPasswordResetEmail(email);
-    };
-
-    const updateProfile = () => {};
+    const updateProfile = () => { };
     if (state.isInitialized !== undefined && !state.isInitialized) {
         return <Loader />;
     }
@@ -83,12 +77,9 @@ export const FirebaseProvider = ({ children }: { children: React.ReactElement })
         <FirebaseContext.Provider
             value={{
                 ...state,
-                firebaseRegister,
-                firebaseEmailPasswordSignIn,
-                login: () => {},
+                login: () => { },
                 firebaseGoogleSignIn,
                 logout,
-                resetPassword,
                 updateProfile
             }}
         >

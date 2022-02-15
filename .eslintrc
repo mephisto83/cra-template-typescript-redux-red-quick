@@ -1,15 +1,29 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
     "plugins": [
+      "prettier",
       "@typescript-eslint"
     ],
     "extends": [
       "airbnb-typescript",
-      "plugin:prettier/recommended"
+      "react-app",
+      "prettier"
     ],
-    "env": {
-      "jest": true
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "moduleDirectory": [
+            "node_modules",
+            "src/"
+          ]
+        },
+        "typescript": {
+          "alwaysTryTypes": true
+        }
+      }
     },
     "rules": {
       // Make prettier code formatting suggestions more verbose.
@@ -70,25 +84,14 @@
       "prefer-template": "off",
       "no-console": "off",
       "no-extend-native": "off",
+      "arrow-body-style": "off",
       "import/no-duplicates": "off",
       "vars-on-top": "off",
       "react/style-prop-object": "off",
+      "react/no-unused-prop-types": "off",
+      "no-restricted-globals": "off",
       "no-lonely-if": "off",
       "one-var": "off",
       "prefer-destructuring": "off"
-    },
-    "overrides": [
-      {
-        "files": [
-          "*.ts",
-          "*.tsx"
-        ],
-        "parserOptions": {
-          "ecmaVersion": 12,
-          "project": [
-            "./tsconfig.json"
-          ]
-        }
-      }
-    ]
+    }
   }

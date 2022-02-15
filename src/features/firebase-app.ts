@@ -1,18 +1,14 @@
 import * as firebase from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, Auth, User } from "firebase/auth";
 import * as firedatabase from "firebase/database";
 import { signInAnonymously } from "firebase/auth";
-import { getFirestore, collection } from "firebase/firestore";
+import { getFirestore, collection, Firestore } from "firebase/firestore";
 // These imports load individual services into the firebase namespace.
 import "firebase/auth";
 import "firebase/storage";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, FirebaseStorage } from "firebase/storage";
 import "firebase/database";
 import "firebase/firestore";
-
-// Import the functions you need from the SDKs you need
-import { getAnalytics } from "firebase/analytics";
-import { onValue } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -33,21 +29,36 @@ export function debounce(func: any, wait: any, immediate?: any) {
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
+  apiKey: "AIzaSyDWO_he76_Auz3VQvXhTPMWW_jamjjeBUU",
+  authDomain: "playwatch-dev-test.firebaseapp.com",
+  projectId: "playwatch-dev-test",
+  storageBucket: "playwatch-dev-test.appspot.com",
+  messagingSenderId: "669642880526",
+  appId: "1:669642880526:web:46b7380fdbab2e997bee5f",
+  measurementId: "G-K1RRJTDYQY"
 };
 
 // Initialize Firebase
 
-let app = firebase.initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore(app);
-const database = firedatabase.getDatabase(app);
-const storage = getStorage(app);
+export function setupFirebase() {
+  app = firebase.initializeApp(firebaseConfig);
+  auth = getAuth();
+  db = getFirestore(app);
+  database = firedatabase.getDatabase(app);
+  storage = getStorage(app);
+  authStateListener();
+}
+let app: firebase.FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+let database: firedatabase.Database | undefined;
+let storage: FirebaseStorage | undefined;
 
 export function getApp() {
   return app;
 }
-export function getReqs() {
-  return { db, app }; //
+export function getReqs(): { db: Firestore | undefined; app: firebase.FirebaseApp | undefined, auth: Auth | undefined } {
+  return { db, app, auth }; //
 }
 export const PROVIDERS = {
   GOOGLE: "GOOGLE",
@@ -57,21 +68,40 @@ export const PROVIDERS = {
 };
 export function listenTo(path: any, callback: any) {
   try {
-    firedatabase.onValue(firedatabase.ref(database, path), (snapshot) => {
-      callback(snapshot.val());
-    });
+    if (database) {
+      firedatabase.onValue(firedatabase.ref(database, path), (snapshot) => {
+        callback(snapshot.val());
+      });
+    } else {
+      throw "database not defined";
+    }
   } catch (e) {
     console.error(e);
   }
 }
 export function postTo(path: any, data: any) {
+  if (!database) {
+    throw "no database";
+  }
   try {
     setUndefinedPropertyToNull(data);
-    return firedatabase.update(firedatabase.ref(database), { [path]: data });
+    if (database) {
+      return firedatabase.update(firedatabase.ref(database), { [path]: data });
+    }
   } catch (e) {
     console.error(e);
   }
   return null;
+}
+export function ResolveUrl(uri: string) {
+  if (location.host.indexOf("localhost") !== -1) {
+    return `https://playwatch-dev-test.web.app\\api${uri}`;
+  }
+  return uri;
+}
+
+export function ResolvePath(uri: string) {
+  return uri;
 }
 function setUndefinedPropertyToNull(data: any) {
   Object.keys(data).forEach((i) => {
@@ -80,13 +110,17 @@ function setUndefinedPropertyToNull(data: any) {
     }
   });
 }
-export async function signOut() {
+export async function signOut(): any {
+  if (!auth) {
+    throw "no auth";
+  }
   return auth
     .signOut()
-    .then((e) => {
+    .then((e: any) => {
       console.log(e);
+      return e;
     })
-    .catch((error) => {
+    .catch((error: any) => {
       return error;
     });
 }
@@ -98,9 +132,8 @@ export function setAuthStateChangedHandler(func: any) {
   _lastState = null;
   return temp;
 }
-
-let _authContextHandler: any =null;
-export function setAuthStateContexHandler(func:any){
+let _authContextHandler: any = null;
+export function setAuthStateContexHandler(func: any) {
   _authContextHandler = func;
 }
 
@@ -115,19 +148,22 @@ function convertServerTime(obj: any) {
   };
 }
 function authStateListener() {
+  if (!auth) {
+    throw "no auth";
+  }
   // [START auth_state_listener]
-  auth.onAuthStateChanged(async (user: any) => {
+  auth.onAuthStateChanged(async (user) => {
     console.log(user);
     _lastState = user;
     if (user) {
       let token = await user.getIdToken();
       let claims = await user
         .getIdTokenResult()
-        .then((idTokenResult) => {
+        .then((idTokenResult: any) => {
           // Confirm the user is an Admin.
           return idTokenResult.claims;
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.log(error);
         });
       // User is signed in, see docs for a list of available properties
@@ -152,13 +188,12 @@ function authStateListener() {
         });
       }
     }
-    if(_authContextHandler) {
-      _authContextHandler(user)
+    if (_authContextHandler) {
+      _authContextHandler(user);
     }
   });
   // [END auth_state_listener]
 }
-authStateListener();
 let url_cache: any = {};
 export function GetCachedUrls(uri: any) {
   if (url_cache[uri]) {
@@ -177,7 +212,10 @@ export async function ResolveStorageUrl(uri: any) {
   if (!uri) {
     return false;
   }
-  let url = `gs://playwatch-f1376.appspot.com/${uri}`;
+  if (!storage) {
+    throw "no storage";
+  }
+  let url = `gs://playwatch-dev-test.appspot.com/${uri}`;
   if (url_cache[uri]) {
     return url_cache[uri];
   }
@@ -206,33 +244,40 @@ export async function signinWith(providerId: any) {
       provider = new FacebookAuthProvider();
       break;
     case PROVIDERS.ANONYMOUS:
-      return signInAnonymously(auth)
-        .then((result) => {
-          // Signed in..
-          return result;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      if (auth) {
+        return signInAnonymously(auth)
+          .then((result) => {
+            // Signed in..
+            return result;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      break;
     default:
       throw "not supported provider : " + providerId;
   }
-  return signInWithPopup(auth, provider)
-    .then((result) => {
-      /** @type {firebase.auth.OAuthCredential} */
-      console.log(result);
-      return result;
-      // ...
-    })
-    .catch((error) => {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-      console.log(error);
-    });
+  if (auth && provider) {
+    return signInWithPopup(auth, provider)
+      .then((result) => {
+        /** @type {firebase.auth.OAuthCredential} */
+        console.log(result);
+        return result;
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+        console.log(error);
+      });
+  } else {
+    throw "missing auth or provider";
+  }
 }

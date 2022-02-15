@@ -47,7 +47,7 @@ const FirebaseLogin = (props: { loginProp?: number }, { ...others }) => {
     const customization = useSelector((state: DefaultRootStateProps) => state.customization);
     const [checked, setChecked] = React.useState(true);
 
-    const { firebaseEmailPasswordSignIn, firebaseGoogleSignIn } = useAuth();
+    const {  firebaseGoogleSignIn } = useAuth();
     const googleHandler = async () => {
         try {
             await firebaseGoogleSignIn();
