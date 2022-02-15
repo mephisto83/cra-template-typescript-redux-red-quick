@@ -23,11 +23,17 @@
     "@typescript-eslint/object-curly-spacing": "off",
     "react/jsx-filename-extension": [
       0
-    ],
+    ], // suppress errors for missing 'import React' in files
+    "react/react-in-jsx-scope": "off",
+    // allow jsx syntax in js files (for next.js project)
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/anchor-is-valid": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
     "no-nested-ternary": "off",
+    "react/require-default-props": "off",
+    "import/no-cycle": "off",
+    "react/prop-types": "off",
     "@typescript-eslint/no-use-before-define": "off",
     "no-case-declarations": "off",
     "@typescript-eslint/dot-notation": "off",
